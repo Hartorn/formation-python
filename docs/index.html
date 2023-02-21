@@ -4,7 +4,7 @@
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-		<title>reveal.js</title>
+		<title>Formation Python</title>
 
 		<link rel="stylesheet" href="dist/reset.css">
 		<link rel="stylesheet" href="dist/reveal.css">
@@ -16,7 +16,176 @@
 	<body>
 		<div class="reveal">
 			<div class="slides">
-				<section>Slide 1</section>
+				<section>
+					<section data-markdown>
+						## Formation python
+						### Ou comment créer un projet from scratch
+					</section>
+					<section data-markdown>
+						## Sommaire
+						* Création d'un projet
+						* Ajouter une dépendance
+						* Containerisation + makefile
+						* ajout de tests
+						* CI
+						* Déploiement
+					</section>
+				</section>
+				<section>
+					<section data-markdown>
+						## Pré-requis
+						* Vs Code
+						* python3 + poetry
+						* Docker + docker-compose
+						* Un compte Github + setup des clefs ssh
+						* Ajout de tests
+						* CI
+						* Déploiement
+					</section>
+					<section data-markdown>
+						## Install Docker
+						```sh
+						# Install docker
+						curl -fsSL https://get.docker.com -o get-docker.sh
+						sh get-docker.sh
+						# Install compose switch 
+						curl -fsSL https://raw.githubusercontent.com/docker/compose-switch/master/install_on_linux.sh | sh
+						```
+					</section>
+					<section data-markdown>
+						## Install Poetry
+						```sh
+						curl -sSL https://install.python-poetry.org | python3 -
+						```
+					</section>
+					<section data-markdown>
+						## Vs Code plugins
+						* Dev Containers
+						* GitLens
+						* GitGraph
+						* Local History
+					</section>
+				</section>
+				<section>
+					<section data-markdown>
+						## Créer un projet python en utilisant Poetry
+						https://python-poetry.org/
+						```sh
+						# See all commands
+						poetry
+						# See help
+						poetry help
+						# Ajouter une dépendance
+						poetry add --dev pytest
+						```
+					</section>
+					<section data-markdown>
+						## Builder un projet
+						```sh
+						# Builder
+						poetry build
+						# Le publier sur Pypi
+						poetry publish
+						```
+					</section>
+
+				</section>
+				<section>					
+					<section data-markdown>
+					## Utiliser VsCode pour créer un dev container
+					</section>
+					<section data-markdown>
+					## Utiliser VsCode pour créer un dev container depuis un dockerfile
+					```Dockerfile
+					FROM nexus.anotherbrain.lan/base/ubuntu20.04:2.0-python3.8
+
+					ENV REQUESTS_CA_BUNDLE /etc/ssl/certs/ca-certificates.crt
+					ENV POETRY_HOME /etc/poetry
+					# Make poetry available in PATH
+					ENV PATH "/etc/poetry/bin:$PATH"
+					
+					RUN curl -sSL https://install.python-poetry.org | POETRY_HOME=${POETRY_HOME} python3 - --version 1.3.2
+
+					# For VsCode
+					# https://code.visualstudio.com/remote/advancedcontainers/add-nonroot-user
+					ARG USERNAME=hawk
+					ARG USER_UID=1000
+					ARG USER_GID=$USER_UID
+					# Create the user
+					# Also, install docker, and some tools, nano and openssh-client are required for git usage
+					RUN groupadd --gid $USER_GID $USERNAME \
+							&& useradd --uid $USER_UID --gid $USER_GID -m $USERNAME \
+							&& apt-get update \
+							&& apt-get install --no-install-recommends -y \
+							git \
+							bash-completion \
+							sudo \
+							nano \
+							openssh-client \
+							&& echo $USERNAME ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/$USERNAME \
+							&& chmod 0440 /etc/sudoers.d/$USERNAME \
+							&& apt-get autoremove -y\
+							&& apt-get clean \
+							&& rm -rf /var/lib/apt-get/lists/*
+					
+					```
+					</section>
+					<section data-markdown>
+					## Créer un serveur de notebook avec un docker-compose
+					</section>
+					<section data-markdown>
+					## Utiliser VsCode pour créer un dev container depuis un dockerfile
+					</section>
+					<section data-markdown>
+					## Ecrire un ou deux tests pythons + intégration VSCode (venv)
+					</section>
+				</section>
+				<section>					
+					<section data-markdown>
+					## Entrainement d'un modèle
+					* Récupérer et faire tourner le notebook d'entrainement
+					* Vérifier que le modèle a bien été save ainsi que la donnée
+					* (optionnel) Remettre les fonctions dans le projet en cleanant le notebook
+					</section>
+					<section data-markdown>
+					## Mettre en place un serveur d'inférence 
+					* Récupérer et faire tourner le notebook d'inference
+					* Préparer une fonction et tester sa stabilité pour un modèle donné (non regression)
+					* Créer une API REST en utilisant Fast et l'exposer
+					* L'appeler pour
+					* En faire un service supplémentaire
+					</section>
+					<section data-markdown>
+					## Faire une CI
+					- Activer la CI avec CircleCI sur github (ou Github Actions)
+					- Mettre en place la validation de PR via la CI
+					- (Optionnel) Changer la gestion des droits, protéger la branche main, forcer le rebase + forcer la validation CI
+					</section>
+					<section data-markdown>
+					## Avoir une image de production
+					- Construire une image de prod contenant le serveur d'inférence + le modèle
+					- La push sur le registry docker Github (ou Dockerhub ou autre)
+					- Creer une CI sur main buildant cette image et la pushant 
+					</section>
+					<section data-markdown>
+					## Héberger l'image en ligne
+					- Créer un service avec Heroku et l'héberger
+					- Regarder la doc Kubernetes et créer une YAML du déploiement (+ secret docker registry)
+					</section>
+					<section data-markdown>
+						## Créer une infra + déployer
+						- Créer un compte GCP gratuit
+						- Utiliser Terraform pour créer un cluster gratuit sur GCP (!ne pas push les secrets ou le state)
+						- Déployer l'application
+						- Scale le nombre de replicas (puis unscale)
+						- "Acheter" un domain gratuit
+						- Comprendre la notion d'ingress, de zone dns, et de certificat (let's encrypt et cert manager)
+						- Essayer d'intégrer le maximum (pas forcément en Terraform)
+						- Quand le déploiement fonctionne, regarder la notion de HPA en Kubernetes et de node scaling
+						</section>
+	
+				</section>
+
 				<section>Slide 2</section>
 			</div>
 		</div>
