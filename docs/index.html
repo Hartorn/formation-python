@@ -101,16 +101,16 @@
 
 					ENV REQUESTS_CA_BUNDLE /etc/ssl/certs/ca-certificates.crt
 					ENV POETRY_HOME /etc/poetry
+					RUN curl -sSL https://install.python-poetry.org | POETRY_HOME=${POETRY_HOME} python3 - --version 1.3.2
 					# Make poetry available in PATH
 					ENV PATH "/etc/poetry/bin:$PATH"
 					
-					RUN curl -sSL https://install.python-poetry.org | POETRY_HOME=${POETRY_HOME} python3 - --version 1.3.2
-
+					
 					# For VsCode
 					# https://code.visualstudio.com/remote/advancedcontainers/add-nonroot-user
-					ARG USERNAME=hawk
-					ARG USER_UID=1000
-					ARG USER_GID=$USER_UID
+					ARG USERNAME=bhousin
+					ARG USER_UID=3029
+					ARG USER_GID=2012
 					# Create the user
 					# Also, install docker, and some tools, nano and openssh-client are required for git usage
 					RUN groupadd --gid $USER_GID $USERNAME \
@@ -128,13 +128,19 @@
 							&& apt-get clean \
 							&& rm -rf /var/lib/apt-get/lists/*
 					
+					USER ${USERNAME}
+					WORKDIR /test_proj
+					
+					ENV SHELL /bin/bash
 					```
 					</section>
 					<section data-markdown>
 					## Créer un serveur de notebook avec un docker-compose
+					cf https://github.com/Hartorn/formation-python/tree/correction 
+					pour comprendre ou rechercher en ligne
 					</section>
 					<section data-markdown>
-					## Utiliser VsCode pour créer un dev container depuis un dockerfile
+					## Utiliser VsCode pour créer un dev container depuis docker-compose
 					</section>
 					<section data-markdown>
 					## Ecrire un ou deux tests pythons + intégration VSCode (venv)
@@ -152,8 +158,7 @@
 					* Récupérer et faire tourner le notebook d'inference
 					* Préparer une fonction et tester sa stabilité pour un modèle donné (non regression)
 					* Créer une API REST en utilisant Fast et l'exposer
-					* L'appeler pour
-					* En faire un service supplémentaire
+					* L'appeler pour en faire un service supplémentaire
 					</section>
 					<section data-markdown>
 					## Faire une CI
