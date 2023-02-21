@@ -5,10 +5,9 @@ default: help;
 
 ##### Docker specific #####
 
-setup: ## Alias for make deps
-	make deps
-	touch ${HOME}/.gitconfig # This is for CI, to have a file and not a dir as config 
-.PHONY: setup
+deps: ## Install virtual env
+	make docker svc=${SVC_DEV} cmd="poetry install --sync"
+.PHONY: deps
 
 docker: ## Run command in docker (use cmd="python3 hawk/main.py --help" for inline, or nothing for interactive)
 	docker compose run ${opts} --rm ${svc} ${cmd}
