@@ -36,7 +36,7 @@ services:
         - USER_UID=${USER_UID}
         - USER_GID=${USER_GID}
     command: poetry run jupyter notebook --ip 0.0.0.0 --port 8888 --no-browser --notebook-dir ./notebooks --NotebookApp.token=''
-    environment:
+    # environment:
       # - FAST_TEST=true
       # - PORT=8888
     ports:
