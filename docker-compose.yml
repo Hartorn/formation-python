@@ -19,10 +19,10 @@ services:
       # - /mnt/partage:/mnt/partage
       - .:/test_proj:cached
       # - hawk_deps:/poetry_cache
-      - ${HOME}/.gitconfig:/home/${USERNAME}/.gitconfig:ro
-      - ${HOME}/.ssh:/home/${USERNAME}/.ssh:ro
-      - /usr/share/ca-certificates/anotherbrain.lan/:/usr/share/ca-certificates/anotherbrain.lan/:ro
-      - /etc/ssl/certs/:/etc/ssl/certs/:ro
+      # - ${HOME}/.gitconfig:/home/${USERNAME}/.gitconfig:ro
+      # - ${HOME}/.ssh:/home/${USERNAME}/.ssh:ro
+      # - /usr/share/ca-certificates/anotherbrain.lan/:/usr/share/ca-certificates/anotherbrain.lan/:ro
+      # - /etc/ssl/certs/:/etc/ssl/certs/:ro
     shm_size: '1G'
     networks:
       - dev
@@ -38,7 +38,7 @@ services:
     command: poetry run jupyter notebook --ip 0.0.0.0 --port 8888 --no-browser --notebook-dir ./notebooks --NotebookApp.token=''
     environment:
       # - FAST_TEST=true
-      - PORT=8888
+      # - PORT=8888
     ports:
       - 8888:8888
     volumes:
@@ -48,11 +48,11 @@ services:
       # - /mnt/partage:/mnt/partage
       - .:/test_proj
       # - hawk_deps:/poetry_cache
-      - /usr/share/ca-certificates/anotherbrain.lan/:/usr/share/ca-certificates/anotherbrain.lan/:ro
-      - /etc/ssl/certs/:/etc/ssl/certs/:ro
-      - ${HOME}/.gitconfig:/home/${USERNAME}/.gitconfig:ro
-      - ${HOME}/.ssh:/home/${USERNAME}/.ssh:ro
-    shm_size: '1G'
+    #   - /usr/share/ca-certificates/anotherbrain.lan/:/usr/share/ca-certificates/anotherbrain.lan/:ro
+    #   - /etc/ssl/certs/:/etc/ssl/certs/:ro
+    #   - ${HOME}/.gitconfig:/home/${USERNAME}/.gitconfig:ro
+    #   - ${HOME}/.ssh:/home/${USERNAME}/.ssh:ro
+    # shm_size: '1G'
     networks:
       - dev
 volumes:
