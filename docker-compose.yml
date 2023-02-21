@@ -1,0 +1,66 @@
+version: "3.5"
+services:
+  dev_service:
+    image: dev_service:dev
+    build:
+      context: .
+      # target: src
+      args:
+        - USERNAME=${USERNAME}
+        - USER_UID=${USER_UID}
+        - USER_GID=${USER_GID}
+    environment:
+      - TOTO=tata
+      - FAST_TEST=true
+    volumes:
+      # - /mnt/dataset:/mnt/dataset
+      # - /mnt/dataset:/datasets
+      # - /mnt/share:/mnt/share
+      # - /mnt/partage:/mnt/partage
+      - .:/test_proj:cached
+      # - hawk_deps:/poetry_cache
+      - ${HOME}/.gitconfig:/home/${USERNAME}/.gitconfig:ro
+      - ${HOME}/.ssh:/home/${USERNAME}/.ssh:ro
+      - /usr/share/ca-certificates/anotherbrain.lan/:/usr/share/ca-certificates/anotherbrain.lan/:ro
+      - /etc/ssl/certs/:/etc/ssl/certs/:ro
+    shm_size: '1G'
+    networks:
+      - dev
+  dev_notebook:
+    image: dev_service:dev
+    build:
+      context: .
+      # target: src
+      args:
+        - USERNAME=${USERNAME}
+        - USER_UID=${USER_UID}
+        - USER_GID=${USER_GID}
+    command: poetry run jupyter notebook --ip 0.0.0.0 --port 8888 --no-browser --notebook-dir ./notebooks --NotebookApp.token=''
+    environment:
+      # - FAST_TEST=true
+      - PORT=8888
+    ports:
+      - 8888:8888
+    volumes:
+      # - /mnt/dataset:/mnt/dataset
+      # - /mnt/dataset:/datasets
+      # - /mnt/share:/mnt/share
+      # - /mnt/partage:/mnt/partage
+      - .:/test_proj
+      # - hawk_deps:/poetry_cache
+      - /usr/share/ca-certificates/anotherbrain.lan/:/usr/share/ca-certificates/anotherbrain.lan/:ro
+      - /etc/ssl/certs/:/etc/ssl/certs/:ro
+      - ${HOME}/.gitconfig:/home/${USERNAME}/.gitconfig:ro
+      - ${HOME}/.ssh:/home/${USERNAME}/.ssh:ro
+    shm_size: '1G'
+    networks:
+      - dev
+volumes:
+  dev_deps:
+    # name: dev_service
+networks:
+  dev:
+    # name: dev_service
+    # driver: bridge
+    # driver_opts:
+    #   com.docker.network.driver.mtu: 1400
